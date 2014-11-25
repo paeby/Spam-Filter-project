@@ -22,7 +22,7 @@ public class filter {
 		}
 		else {
 			//directory containing hams and spams
-			JFileChooser directory = new JFileChooser(args[0]);
+			File directory = new File(args[0]);
 			//file to test
 			File testFile = new File(args[1]);
 			//It selects only hams and spams in the directory
@@ -31,10 +31,9 @@ public class filter {
 					return file.getName().matches("^(spam|ham)") && file.isFile();
 				}
 			};
-			directory.setFileFilter((javax.swing.filechooser.FileFilter) filter);
 
 			//All spams and hams
-			File[] trainingFiles = directory.getSelectedFiles();
+			File[] trainingFiles = directory.listFiles(filter);
 			//Only spam files (in the algorithm, docsj)
 			List<File> spamFiles = new ArrayList<File>();
 			//Only ham files
