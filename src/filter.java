@@ -71,7 +71,7 @@ public class filter {
 		}
 	}
 
-	public static boolean classify(File email, double pSpam, double pHam){
+	private static boolean classify(File email, double pSpam, double pHam){
 		
 		double classifySpam = pSpam;
 		double classifyHam = pHam;
@@ -91,7 +91,7 @@ public class filter {
 		return classifySpam > classifyHam;
 	}
 
-	public static void wordCounter(List<File> list, int i){
+	private static void wordCounter(List<File> list, int i){
 		
 		Scanner scanner;
 		for(File f:list){
