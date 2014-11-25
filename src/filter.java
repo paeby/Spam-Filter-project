@@ -44,7 +44,6 @@ public class filter {
 					hamFiles.add(f);
 				}
 			}
-			System.out.println(spamFiles.size());
 			double pSpam = (double)spamFiles.size()/(double)trainingFiles.length;
 			double pHam = (double)hamFiles.size()/(double)trainingFiles.length;
 
@@ -86,7 +85,6 @@ public class filter {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
 		return classifySpam > classifyHam;
 	}
 
