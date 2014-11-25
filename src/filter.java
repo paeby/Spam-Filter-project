@@ -81,19 +81,14 @@ public class filter {
 			Scanner scanner = new Scanner(email).useDelimiter("[\\s\\p{Punct}]+");
 			
 			while(scanner.hasNext()){
-				classifySpam = classifySpam*(vocabulary.get(scanner.next())[2]);
-				classifyHam = classifyHam*(vocabulary.get(scanner.next())[3]);
+				classifySpam *= (vocabulary.get(scanner.next())[2]);
+				classifyHam *= (vocabulary.get(scanner.next())[3]);
 			} 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		
-		if(classifySpam > classifyHam){
-			return true;
-		}
-		else {
-			return false;
-		}
+		return classifySpam > classifyHam;
 	}
 
 	public static void wordCounter(List<File> list, int i){
