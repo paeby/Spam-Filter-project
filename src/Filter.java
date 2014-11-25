@@ -1,54 +1,92 @@
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 
 
 public class filter {
-	
+	//Vocabulary: set of all distinct words occurring in all e-mails. First column of the table is for spams, second for hams,
+	//third conditional probability of the word knowing pSpam, fourth conditional probability of the word knowing pHam.
+	private static HashMap<String, double[]> vocabulary = new HashMap<String, double[]>();
+	private static int[] totalWords = new int[2];
+
 	public static void main (String[] args) {
-        if (args.length == 2) {
-        	//directory containing hams and spams
-        	JFileChooser directory = new JFileChooser(args[0]);
-        	//file to test
-        	File test_file = new File(args[1]);
-        	//It selects only hams and spams in the directory
-        	FileFilter filter = new FileFilter(){
-        		public boolean accept(File file){
-        			return file.getName().matches("^(spam|ham)") || file.isFile();
-        		}
-        	};
-        	directory.setFileFilter((javax.swing.filechooser.FileFilter) filter);
-        	
-        	//All spams and hams
-        	File[] training_files = directory.getSelectedFiles();
-        	//Only spam files (in the algorithm, docsj)
-        	List<File> spam_files = new ArrayList<File>();
-        	//Only ham files
-        	List<File> ham_files = new ArrayList<File>();
-        	
-        	for(File f:training_files){
-        		if(f.getName().matches("^spam")){
-        			spam_files.add(f);
-        		}
-        		else{
-        			ham_files.add(f);
-        		}
-        	}
-        	
-        	double p_spam = (double)spam_files.size()/(double)training_files.length;
-        	double p_ham = (double)ham_files.size()/(double)training_files.length;
-        	
-        	//Vocabulary: set of all distinct words occurring in all e-mails. First column of the table is for spams, second for hams
-        	HashMap<String, int[]> vocabulary = new HashMap();
-        	
-        	for(File f:spam_files){
-        		
-        	}
-       
-        }
-    }
+		if (args.length == 2) {
+			//directory containing hams and spams
+			JFileChooser directory = new JFileChooser(args[0]);
+			//file to test
+			File test_file = new File(args[1]);
+			//It selects only hams and spams in the directory
+			FileFilter filter = new FileFilter(){
+				public boolean accept(File file){
+					return file.getName().matches("^(spam|ham)") && file.isFile();
+				}
+			};
+			directory.setFileFilter((javax.swing.filechooser.FileFilter) filter);
+
+			//All spams and hams
+			File[] trainingFiles = directory.getSelectedFiles();
+			//Only spam files (in the algorithm, docsj)
+			List<File> spamFiles = new ArrayList<File>();
+			//Only ham files
+			List<File> hamFiles = new ArrayList<File>();
+
+			for(File f:trainingFiles){
+				if(f.getName().matches("^spam")){
+					spamFiles.add(f);
+				}
+				else{
+					hamFiles.add(f);
+				}
+			}
+
+			double pSpam = (double)spamFiles.size()/(double)trainingFiles.length;
+			double pHam = (double)hamFiles.size()/(double)trainingFiles.length;
+
+			wordCounter(spamFiles, 0);
+			wordCounter(hamFiles, 1);
+
+			for(String word:vocabulary.keySet()){
+				double[] tab = vocabulary.get(word);
+				tab[2] = (tab[0]+1)/((double)(totalWords[0]+vocabulary.size()));
+				tab[3] = (tab[1]+1)/((double)(totalWords[1]+vocabulary.size()));
+				vocabulary.put(word, tab);
+			}
+			
+		}
+	}
+	
+	public static boolean classify(File email){
+		return 
+	}
+	
+	public static void wordCounter(List<File> list, int i){
+		Scanner scanner;
+		for(File f:list){
+			try {
+				scanner = new Scanner(f).useDelimiter("[\\s\\p{Punct}]+");
+				while(scanner.hasNext()){
+					String word = scanner.next();
+					totalWords[i]++;
+					if(vocabulary.containsKey(word)){
+						double[] tab = vocabulary.get(word);
+						tab[i]++;
+						vocabulary.put(word,tab);
+					}
+					else{
+						double[] tab = new double[]{0,0,0,0};
+						tab[i]++;
+						vocabulary.put(word, tab);
+					}
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
