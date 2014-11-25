@@ -16,7 +16,11 @@ public class filter {
 	private static int[] totalWords = new int[2];
 
 	public static void main (String[] args) {
-		if (args.length == 2) {
+		if (args.length != 2) {
++			throw new IllegalArgumentException("Wrong number of arguments\n" +
++					"The proper usage is: java train_directory test_file");
++		}
++		else {
 			//directory containing hams and spams
 			JFileChooser directory = new JFileChooser(args[0]);
 			//file to test
