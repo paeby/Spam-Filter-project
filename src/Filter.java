@@ -20,7 +20,7 @@ public class filter {
 			//directory containing hams and spams
 			JFileChooser directory = new JFileChooser(args[0]);
 			//file to test
-			File test_file = new File(args[1]);
+			File testFile = new File(args[1]);
 			//It selects only hams and spams in the directory
 			FileFilter filter = new FileFilter(){
 				public boolean accept(File file){
@@ -51,21 +51,49 @@ public class filter {
 			wordCounter(spamFiles, 0);
 			wordCounter(hamFiles, 1);
 
+			//Calculating conditional probabilities 
 			for(String word:vocabulary.keySet()){
 				double[] tab = vocabulary.get(word);
 				tab[2] = (tab[0]+1)/((double)(totalWords[0]+vocabulary.size()));
 				tab[3] = (tab[1]+1)/((double)(totalWords[1]+vocabulary.size()));
 				vocabulary.put(word, tab);
 			}
-			
+			if(classify(testFile, pSpam, pHam)){
+				System.out.println("spam\n");
+			}
+			else{
+				System.out.println("ham\n");
+			}
 		}
 	}
-	
-	public static boolean classify(File email){
-		return 
+
+	public static boolean classify(File email, double pSpam, double pHam){
+		
+		double classifySpam = pSpam;
+		double classifyHam = pHam;
+		
+		try {	
+			@SuppressWarnings("resource")
+			Scanner scanner = new Scanner(email).useDelimiter("[\\s\\p{Punct}]+");
+			
+			while(scanner.hasNext()){
+				classifySpam = classifySpam*(vocabulary.get(scanner.next())[2]);
+				classifyHam = classifyHam*(vocabulary.get(scanner.next())[3]);
+			} 
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		if(classifySpam > classifyHam){
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
-	
+
 	public static void wordCounter(List<File> list, int i){
+		
 		Scanner scanner;
 		for(File f:list){
 			try {
