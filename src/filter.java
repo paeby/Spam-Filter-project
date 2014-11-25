@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.swing.JFileChooser;
-
-
 public class filter {
 	//Vocabulary: set of all distinct words occurring in all e-mails. First column of the table is for spams, second for hams,
 	//third conditional probability of the word knowing pSpam, fourth conditional probability of the word knowing pHam.
@@ -80,8 +77,9 @@ public class filter {
 			Scanner scanner = new Scanner(email).useDelimiter("[\\s\\p{Punct}]+");
 			
 			while(scanner.hasNext()){
-				classifySpam *= (vocabulary.get(scanner.next())[2]);
-				classifyHam *= (vocabulary.get(scanner.next())[3]);
+				String next = scanner.next();
+				classifySpam *= (vocabulary.get(next)[2]);
+				classifyHam *= (vocabulary.get(next)[3]);
 			} 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
