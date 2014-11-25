@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 
 
-public class Filter {
+public class filter {
 	
 	public static void main (String[] args) {
         if (args.length == 2) {
@@ -18,7 +18,7 @@ public class Filter {
         	//It selects only hams and spams in the directory
         	FileFilter filter = new FileFilter(){
         		public boolean accept(File file){
-        			return file.getName().matches("^(spam|ham)");
+        			return file.getName().matches("^(spam|ham)") || file.isFile();
         		}
         	};
         	directory.setFileFilter((javax.swing.filechooser.FileFilter) filter);
@@ -42,8 +42,12 @@ public class Filter {
         	double p_spam = (double)spam_files.size()/(double)training_files.length;
         	double p_ham = (double)ham_files.size()/(double)training_files.length;
         	
-        	//Vocabulary: set of all distinct words occuring in all emails.
-        	HashMap<String, File[]> vocabulary = new HashMap();
+        	//Vocabulary: set of all distinct words occurring in all e-mails. First column of the table is for spams, second for hams
+        	HashMap<String, int[]> vocabulary = new HashMap();
+        	
+        	for(File f:spam_files){
+        		
+        	}
        
         }
     }
