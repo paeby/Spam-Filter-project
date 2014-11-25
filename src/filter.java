@@ -25,7 +25,7 @@ public class filter {
 			//It selects only hams and spams in the directory
 			FileFilter filter = new FileFilter(){
 				public boolean accept(File file){
-					return file.getName().matches("^(spam|ham)") && file.isFile();
+					return file.getName().matches("^(spam|ham).*$") && file.isFile();
 				}
 			};
 
@@ -37,14 +37,14 @@ public class filter {
 			List<File> hamFiles = new ArrayList<File>();
 
 			for(File f:trainingFiles){
-				if(f.getName().matches("^spam")){
+				if(f.getName().matches("^spam.*$")){
 					spamFiles.add(f);
 				}
 				else{
 					hamFiles.add(f);
 				}
 			}
-
+			System.out.println(spamFiles.size());
 			double pSpam = (double)spamFiles.size()/(double)trainingFiles.length;
 			double pHam = (double)hamFiles.size()/(double)trainingFiles.length;
 
@@ -68,28 +68,30 @@ public class filter {
 	}
 
 	private static boolean classify(File email, double pSpam, double pHam){
-		
+
 		double classifySpam = pSpam;
 		double classifyHam = pHam;
-		
+
 		try {	
 			@SuppressWarnings("resource")
 			Scanner scanner = new Scanner(email).useDelimiter("[\\s\\p{Punct}]+");
-			
+
 			while(scanner.hasNext()){
 				String next = scanner.next();
-				classifySpam *= (vocabulary.get(next)[2]);
-				classifyHam *= (vocabulary.get(next)[3]);
+				if(vocabulary.containsKey(next)){
+					classifySpam *= (vocabulary.get(next)[2]);
+					classifyHam *= (vocabulary.get(next)[3]);
+				}
 			} 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		return classifySpam > classifyHam;
 	}
 
 	private static void wordCounter(List<File> list, int i){
-		
+
 		Scanner scanner;
 		for(File f:list){
 			try {
