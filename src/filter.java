@@ -6,36 +6,57 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * @author Prisca Aeby, Alexis Semple
+ * Main class for the Machine Learning assignment.
+ * This file implements a naive Bayesian text classifier.
+ */
 public class filter {
-	//Vocabulary: set of all distinct words occurring in all e-mails. First column of the table is for spams, second for hams,
-	//third conditional probability of the word knowing pSpam, fourth conditional probability of the word knowing pHam.
+	//Vocabulary: 
+	/**
+	 * Set of all distinct words occurring in all e-mails. 
+	 * First entry of the table is for the count of the word occurring in all spam files, 
+	 * the second is the same but for ham files,
+	 * the third contains the conditional probability of the word knowing pSpam (P(word|pSpam)), 
+	 * the fourth conditional probability of the word knowing pHam (P(word|pHam)).
+	 */
 	private static HashMap<String, double[]> vocabulary = new HashMap<String, double[]>();
+	
+	/**
+	 * The total number of words 
+	 * totalWords[0]: in all the spam files
+	 * totalWords[1]: in all the ham files 
+	 */
 	private static int[] totalWords = new int[2];
 
+	/**
+	 * The main function for the program
+	 * @param args The expected structure is: first, the path to the directory of training data, second the file to be classified
+	 */
 	public static void main (String[] args) {
 		if (args.length != 2) {
 			throw new IllegalArgumentException("Wrong number of arguments\n" +
 					"The proper usage is: java train_directory test_file");
 		}
 		else {
-			//directory containing hams and spams
+			//directory containing ham and spam
 			File directory = new File(args[0]);
 			//file to test
 			File testFile = new File(args[1]);
-			//It selects only hams and spams in the directory
+			//It selects only ham and spam files in the directory
 			FileFilter filter = new FileFilter(){
 				public boolean accept(File file){
 					return file.getName().matches("^(spam|ham).*$") && file.isFile();
 				}
 			};
 
-			//All spams and hams
+			//All spam and ham files
 			File[] trainingFiles = directory.listFiles(filter);
-			//Only spam files (in the algorithm, docsj)
+			//Only spam files
 			List<File> spamFiles = new ArrayList<File>();
 			//Only ham files
 			List<File> hamFiles = new ArrayList<File>();
-
+			
 			for(File f:trainingFiles){
 				if(f.getName().matches("^spam.*$")){
 					spamFiles.add(f);
@@ -44,6 +65,8 @@ public class filter {
 					hamFiles.add(f);
 				}
 			}
+			
+			// Probability of spam and ham, respectively
 			double pSpam = (double)spamFiles.size()/(double)trainingFiles.length;
 			double pHam = (double)hamFiles.size()/(double)trainingFiles.length;
 
@@ -66,6 +89,13 @@ public class filter {
 		}
 	}
 
+	/**
+	 * Method that runs the classification on the test file
+	 * @param email the file to be classified
+	 * @param pSpam probability of spam occurring, as computed above
+	 * @param pHam probability of ham occurring, as computed above
+	 * @return True, if the probability for spam for email is higher, else false (e.g. ham)
+	 */
 	private static boolean classify(File email, double pSpam, double pHam){
 
 		double classifySpam = pSpam;
@@ -88,6 +118,11 @@ public class filter {
 		return classifySpam > classifyHam;
 	}
 
+	/**
+	 * Function to count all instances of each word occurring in the list of files
+	 * @param list Contains all files with words to be counted
+	 * @param i indicates whether files in list are spam (i = 0) or ham (i = 1)
+	 */
 	private static void wordCounter(List<File> list, int i){
 
 		Scanner scanner;
