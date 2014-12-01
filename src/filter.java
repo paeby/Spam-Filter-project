@@ -12,7 +12,6 @@ import java.util.Scanner;
  * This file implements a naive Bayesian text classifier.
  */
 public class filter {
-	//Vocabulary: 
 	/**
 	 * Set of all distinct words occurring in all e-mails. 
 	 * First entry of the table is for the count of the word occurring in all spam files, 
