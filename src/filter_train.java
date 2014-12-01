@@ -41,8 +41,8 @@ public class filter_train {
 	 */
 	public static void main (String[] args) {
 
-		//directory containing ham and spam
-		File directory = new File("home/alexis/git/Spam-filter-project/src/train");
+		//directory containing ham and spam 
+		File directory = new File("/home/alexis/git/Spam-Filter-project/src/train");
 		//It selects only ham and spam files in the directory
 		FileFilter filter = new FileFilter(){
 			public boolean accept(File file){
@@ -142,7 +142,7 @@ public class filter_train {
 		
 		while(iterator.hasNext()) {
 			Map.Entry<String, double[]> entry = iterator.next();
-			out.write(entry.getKey() + " " + doubleToString(entry.getValue()));
+			out.write(entry.getKey() + " " + doubleToString(entry.getValue()) + "\n");
 		}
 		out.close();
 	}
@@ -156,7 +156,7 @@ public class filter_train {
 	private static String doubleToString(double[] array) {
 		String s = "";
 		for(double d: array){
-			s.concat(d + " ");
+			s = s.concat(d + " ");
 		}
 		return s;
 	}
