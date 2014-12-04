@@ -17,13 +17,17 @@ do
   count=0
   for file in train"$i"/test/*
   do
+    echo "file = $file"
     ((total++))
     java filterb "$file" > train"$i"/result_basic_NB.txt
     res=`cat train$i/result_basic_NB.txt`
+    echo "result = $res"
 
     if [[ "$file" =~ .*"$res".* ]]; then
       ((count++))
     fi
+    echo "count = $count"
+    echo "total = $total"
   done
 
   echo "$count" > train"$i"/result_basic_NB.txt
