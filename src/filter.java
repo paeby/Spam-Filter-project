@@ -13,18 +13,18 @@ import java.util.Scanner;
  */
 public class filter {
 	/**
-	 * Set of all distinct words occurring in all e-mails. 
-	 * First entry of the table is for the count of the word occurring in all spam files, 
+	 * Set of all distinct words occurring in all e-mails.
+	 * First entry of the table is for the count of the word occurring in all spam files,
 	 * the second is the same but for ham files,
-	 * the third contains the conditional probability of the word knowing pSpam (P(word|pSpam)), 
+	 * the third contains the conditional probability of the word knowing pSpam (P(word|pSpam)),
 	 * the fourth conditional probability of the word knowing pHam (P(word|pHam)).
 	 */
 	private static HashMap<String, double[]> vocabulary = new HashMap<String, double[]>();
-	
+
 	/**
-	 * The total number of words 
+	 * The total number of words
 	 * totalWords[0]: in all the spam files
-	 * totalWords[1]: in all the ham files 
+	 * totalWords[1]: in all the ham files
 	 */
 	private static int[] totalWords = new int[2];
 
@@ -55,7 +55,7 @@ public class filter {
 			List<File> spamFiles = new ArrayList<File>();
 			//Only ham files
 			List<File> hamFiles = new ArrayList<File>();
-			
+
 			for(File f:trainingFiles){
 				if(f.getName().matches("^spam.*$")){
 					spamFiles.add(f);
@@ -64,7 +64,7 @@ public class filter {
 					hamFiles.add(f);
 				}
 			}
-			
+
 			// Probability of spam and ham, respectively
 			double pSpam = (double)spamFiles.size()/(double)trainingFiles.length;
 			double pHam = (double)hamFiles.size()/(double)trainingFiles.length;
@@ -72,7 +72,7 @@ public class filter {
 			wordCounter(spamFiles, 0);
 			wordCounter(hamFiles, 1);
 
-			//Calculating conditional probabilities 
+			//Calculating conditional probabilities
 			for(String word:vocabulary.keySet()){
 				double[] tab = vocabulary.get(word);
 				tab[2] = (tab[0]+1)/((double)(totalWords[0]+vocabulary.size()));
@@ -100,7 +100,7 @@ public class filter {
 		double classifySpam = pSpam;
 		double classifyHam = pHam;
 
-		try {	
+		try {
 			@SuppressWarnings("resource")
 			Scanner scanner = new Scanner(email).useDelimiter("[\\s\\p{Punct}]+");
 
@@ -110,7 +110,7 @@ public class filter {
 					classifySpam *= (vocabulary.get(next)[2]);
 					classifyHam *= (vocabulary.get(next)[3]);
 				}
-			} 
+			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

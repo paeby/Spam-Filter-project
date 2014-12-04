@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 /**
  * @author Prisca Aeby, Alexis Semple
- * Main class for the Machine Learning assignment.
- * This file implements a naive Bayesian text classifier.
+ * Main class for the classification of the Machine Learning assignment.
+ * This file implements a naive Bayesian text classification.
  */
 public class filterb {
 	/**
@@ -33,7 +33,7 @@ public class filterb {
 		try {
 			trainingData = new Scanner(new File("training_data.txt"));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Error: training_data.txt could not be found!");
 			e.printStackTrace();
 		}
 		
@@ -44,7 +44,8 @@ public class filterb {
 		//Put the training data in the vocabulary
 		while(trainingData.hasNextLine()){
 			String[] entry = trainingData.nextLine().split(" ");
-			vocabulary.put(entry[0], new double[]{Double.parseDouble(entry[1]),Double.parseDouble(entry[2]),Double.parseDouble(entry[3]),Double.parseDouble(entry[4])});
+			vocabulary.put(entry[0], 
+					new double[]{Double.parseDouble(entry[1]),Double.parseDouble(entry[2]),Double.parseDouble(entry[3]),Double.parseDouble(entry[4])});
 		}
 		trainingData.close();
 		
@@ -75,8 +76,8 @@ public class filterb {
 			while(scanner.hasNext()){
 				String next = scanner.next();
 				if(vocabulary.containsKey(next)){
-					classifySpam *= (vocabulary.get(next)[2]);
-					classifyHam *= (vocabulary.get(next)[3]);
+					classifySpam += (vocabulary.get(next)[2]);
+					classifyHam += (vocabulary.get(next)[3]);
 				}
 			} 
 		} catch (FileNotFoundException e) {
