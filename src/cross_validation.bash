@@ -1,7 +1,7 @@
 #!/bin/bash
 clear
 
-#output result.txt with
+#output result_basic_NB.txt with
 #1st line count of successful classifications
 #2nd line count of total classifications
 
@@ -19,15 +19,15 @@ do
   do
     ((total++))
     java filterb "$file" > train"$i"/result_basic_NB.txt
-    res=`cat train$i/result.txt`
+    res=`cat train$i/result_basic_NB.txt`
 
     if [[ "$file" =~ .*"$res".* ]]; then
       ((count++))
     fi
   done
 
-  echo "$count" > train"$i"/result.txt
-  echo "$total" >> train"$i"/result.txt
+  echo "$count" > train"$i"/result_basic_NB.txt
+  echo "$total" >> train"$i"/result_basic_NB.txt
 
   mv training_data.txt train"$i"
 
