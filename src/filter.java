@@ -35,7 +35,7 @@ public class filter {
 	public static void main (String[] args) {
 		if (args.length != 2) {
 			throw new IllegalArgumentException("Wrong number of arguments\n" +
-					"The proper usage is: java train_directory test_file");
+					"The proper usage is: java filter train_directory test_file");
 		}
 		else {
 			//directory containing ham and spam

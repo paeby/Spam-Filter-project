@@ -43,6 +43,11 @@ public class filter_train {
 	 * @param args The expected structure is: first, the path to the directory of training data, second the file to be classified
 	 */
 	public static void main (String[] args) {
+		
+		if(args.length != 1) {
+			throw new IllegalArgumentException("Wrong number of arguments\n" +
+					"The proper usage is: java filter_train training_directory");
+		}
 
 		//directory containing ham and spam 
 		//TODO replace with own path to directory containing training data.
