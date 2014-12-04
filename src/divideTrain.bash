@@ -1,34 +1,23 @@
 #!/bin/bash
 
 for (( i = 1; i < 11; i++ )); do
+	rm -r "train$i"
 	mkdir "train$i"
 done
 
-count1=0
-count2=0
-count3=0
-count4=0
-count5=0
-count6=0
-count7=0
-count8=0
-count9=0
-count10=0
-
-filecount=0
-
-for email in train/*; do
-	filecount=`expr $filecount + 1`
+for(( i = 0; i < 10; i++)); do
+	count["$i"]=0
 done
 
-limit=250
+limit=249
 
 for email in train/*; do
 	rand=$[ ( $RANDOM % 10 )  + 1 ]
-	count="count"
-	randCount=$count$rand
-	while [[ $randCount -gt $limit ]]; do
+	while [[ ${count[${rand}]} -gt $limit ]]; do
 		rand=$[ ( $RANDOM % 10 )  + 1 ]
 	done
+	rand_count=${count[${rand}]}
 	cp $email "train$rand"
+	count[${rand}]=`expr $rand_count + 1`
+	echo `expr $rand_count + 1`
 done
