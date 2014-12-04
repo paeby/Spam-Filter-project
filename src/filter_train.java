@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -164,4 +165,14 @@ public class filter_train {
 		return s;
 	}
 	
+	private static void stopWords(){
+        ArrayList<String> stopWords = new ArrayList<String>(Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by",
+                                "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there",
+                                "these", "they", "this", "to", "was", "will", "with"));
+        for(String word:vocabulary.keySet()){
+                if(stopWords.contains(word)){
+                        vocabulary.remove(word);
+                }
+        }
+	}
 }
