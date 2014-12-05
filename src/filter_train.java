@@ -51,7 +51,7 @@ public class filter_train {
 
 		//directory containing ham and spam 
 		//TODO replace with own path to directory containing training data.
-		File directory = new File("/home/alexis/git/Spam-Filter-project/src/train");
+		File directory = new File(args[0]);
 		
 		//filter selects only ham and spam files in the directory
 		FileFilter filter = new FileFilter(){
