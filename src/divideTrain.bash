@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#Creates folders for cross validation
+#Each with a randomly selected test set
+#and the corresponding training set
+#separated into respective subfolders
+#-Run in folder containing directory "train"
+
 function subdiv {
 	for i in {1..10}
 	do

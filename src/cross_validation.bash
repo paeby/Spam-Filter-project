@@ -1,9 +1,11 @@
 #!/bin/bash
 clear
 
+#Trains and tests on folders for cross-validation
 #output result_basic_NB.txt with
 #1st line count of successful classifications
 #2nd line count of total classifications
+#-Run in parent folder of cross-validation subfolders
 
 for i in {1..10}
 do
