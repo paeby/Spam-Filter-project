@@ -33,7 +33,7 @@ for(( i = 0; i < 10; i++)); do
 	count["$i"]=0
 done
 
-limit=250
+limit=249
 
 for email in train/*; do
 	rand=$[ ( $RANDOM % 10 )  + 1 ]
