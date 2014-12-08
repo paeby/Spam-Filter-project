@@ -8,7 +8,7 @@ import java.util.Scanner;
  * Main class for the classification of the Machine Learning assignment.
  * This file implements a naive Bayesian text classification.
  */
-public class filterb {
+public class filter {
 	/**
 	 * Set of all distinct words occurring in all e-mails. 
 	 * First entry of the table is for the count of the word occurring in all spam files, 
