@@ -23,7 +23,7 @@ do
   do
     echo "file = $file"
     ((total++))
-    java filterb "$file" > train"$i"/result_stop_NB.txt
+    java filter "$file" > train"$i"/result_stop_NB.txt
     res=`cat train$i/result_stop_NB.txt`
     echo "result = $res"
 
