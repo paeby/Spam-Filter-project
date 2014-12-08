@@ -2,7 +2,7 @@
 clear
 
 #Trains and tests on folders for cross-validation
-#output result_stem_NB.txt with
+#output result_stop_NB.txt with
 #1st line count of successful classifications
 #2nd line count of total classifications
 #-Run in parent folder of cross-validation subfolders
@@ -17,15 +17,19 @@ do
   echo "--------Testing files for train$i--------"
   echo
   count=0
+  #folder to store misclassified e-mails from test set
   mkdir train"$i"/misclassified
   for file in train"$i"/test/*
   do
     echo "file = $file"
     ((total++))
-    java filterb "$file" > train"$i"/result_stem_NB.txt
-    res=`cat train$i/result_stem_NB.txt`
+    java filterb "$file" > train"$i"/result_stop_NB.txt
+    res=`cat train$i/result_stop_NB.txt`
     echo "result = $res"
 
+    #if the result produced by the test is contained in filename
+    #e.g. 'spam*.txt' or 'ham*.txt' then increment counter
+    #else copy the file the 'misclassified' directory
     if [[ "$file" =~ .*"$res".* ]]; then
       ((count++))
     else cp "$file" train"$i"/misclassified
@@ -34,8 +38,8 @@ do
     echo "total = $total"
   done
 
-  echo "$count" > train"$i"/result_stem_NB.txt
-  echo "$total" >> train"$i"/result_stem_NB.txt
+  echo "$count" > train"$i"/result_stop_NB.txt
+  echo "$total" >> train"$i"/result_stop_NB.txt
 
   mv training_data.txt train"$i"
 

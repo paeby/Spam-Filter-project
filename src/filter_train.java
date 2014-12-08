@@ -7,12 +7,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import org.tartarus.snowball.EnglishSnowballStemmerFactory;
 import org.tartarus.snowball.util.StemmerException;
 
@@ -30,8 +30,11 @@ public class filter_train {
 	 * the second is the same but for ham files,
 	 * the third contains the conditional probability of the word knowing pSpam (P(word|pSpam)),
 	 * the fourth conditional probability of the word knowing pHam (P(word|pHam)).
+	 * We decided to make it a ConcurrentHashMap and not a simple HashMap in order to avoid
+	 * the ConcurrentModificationException that would be produced by the stopWords()
+	 * preprocessing step. The behaviour remains the same.
 	 */
-	private static HashMap<String, double[]> vocabulary = new HashMap<String, double[]>();
+	private static ConcurrentHashMap<String, double[]> vocabulary = new ConcurrentHashMap<String, double[]>();
 
 	/**
 	 * The total number of words
@@ -120,7 +123,7 @@ public class filter_train {
 					String word = scanner.next();
 					totalWords[i]++;
 					//TODO Uncomment following line to enable stemming preprocessing
-					word = EnglishSnowballStemmerFactory.getInstance().process(word);
+					//word = EnglishSnowballStemmerFactory.getInstance().process(word);
 					if(vocabulary.containsKey(word)){
 						double[] tab = vocabulary.get(word);
 						tab[i]++;
