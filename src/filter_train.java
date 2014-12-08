@@ -96,7 +96,8 @@ public class filter_train {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
+		stopWords();
 	}
 
 	/**
