@@ -22,4 +22,12 @@ There are some preprocessing steps that can be activated in the filter_train.jav
   - the 'import' declarations at the beginning of the document
   - the 'throws' declarations in the definition of wordCounter() (line 116) and main() (line 51)
 
-10-fold cross-validation performed using bash scripts divideTrain.bash, cross_validation.bash
+In order to compile filter_train.java, if using stemming preprocessing, you need to have a copy of org.tartarus.snowball.jar, which has been provided with the submission. To compile and run, you then need to
+
+    javac -cp .:path/to/jar/org.tartarus.snowball.jar filter_train.java
+
+    java -cp '.:path/to/jar/org.tartarus.snowball.jar' filter_train training_directory
+
+We performed 10-fold cross-validation using bash scripts divideTrain.bash and cross_validation.bash.
+
+We randomly split the provided training data using divideTrain.bash into 10 different test sets of equal size, and then used the remaining 90% of the training set as training data for each of the test sets respectively.
