@@ -6,6 +6,8 @@
 #separated into respective subfolders
 #-Run in folder containing directory "train"
 
+#Attribution of training set to each
+#randomly created test set
 function subdiv {
 	for i in {1..10}
 	do
@@ -24,6 +26,8 @@ function subdiv {
 	done
 }
 
+#Remove any existing directories named train{1..10}
+#Create new such directories
 for (( i = 1; i < 11; i++ )); do
 	rm -r "train$i"
 	mkdir "train$i"
@@ -35,6 +39,9 @@ done
 
 limit=249
 
+#Creation of random test sets from train/ directory
+#Random selection of one of the train{1..10} directories
+#Copy of the current file from train/ to that directory
 for email in train/*; do
 	rand=$[ ( $RANDOM % 10 )  + 1 ]
 	while [[ ${count[${rand}]} -gt $limit ]]; do
