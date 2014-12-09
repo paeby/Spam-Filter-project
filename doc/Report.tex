@@ -134,7 +134,12 @@ for(String word: vocabulary.keySet()){
 	vocabulary.put(word, tab);
 		}
 \end{lstlisting}
-where \texttt{totalWords[0..1]} contains the total number of words in all spam (resp. all ham) files and \texttt{vocabulary} is the HashMap of all words.
+where \texttt{totalWords[0..1]} contains the total number of words in all spam (resp. all ham) files and \texttt{vocabulary} is the HashMap of all words. According to the project description, we made the word selection process case-sensitive, and also decided to interpret any form of punctuation or whitespace as a word separator. So the scanner iterating over all words in file \texttt{f} behaves like such:
+\begin{lstlisting}
+scanner = new Scanner(f).useDelimiter("[\\s\\p{Punct}]+");
+\end{lstlisting}
+
+The choice concerning punctuation was a personal one and based on the assumption that we had enough training data provided to ignore varying forms of punctuation. Results may have varied slightly had we taken these different forms into account, particularly considering use that is excessive and non-conform to standards which is dominant in some types of spam.
 
 At the end of the program, the content of vocabulary is written to a text file named \texttt{trainging\_data.txt} in a specific format: the first line contains $pSpam$ and $pHam$ in that order, separated by a space. Each of the following lines is dedicated to a single entry of the \texttt{vocabulary} HashMap, starting by the word itself, followed by the four values of its corresponding array, each separated by a space. The result looks something like this: 
 \begin{lstlisting}
@@ -177,6 +182,13 @@ However, since in the training part we modified $P(w_k|Spam)$ to $log(P(w_k|Spam
 \begin{center}
 $ p_1 = log(pSpam) + \sum\limits_{w_k \in vocabulary}log(P(w_k|Spam))$
 \end{center}
-with the same going for $p_2$, obviously.
+with the same going for $p_2$, obviously. This determines whether a test instance is classified as spam (for $p_1 > p_2$) or ham (otherwise).
+
+\section{Analysis of results and improving the classifier}
+\subsection{10-fold cross-validation}
+As indicated by the project specification, in order to test the consistency of the classifier and to evaluate its precision, we performed a 10-fold cross-validation on the provided training set, which means that we split the training set into 10 test sets of equal size, and we did so randomly in order to obtain an approximately equal spread of members of both classes in all test sets. To each test set (10\% of the original training set, i.e. 250 files) we then match the remaining 90\% as a training set. So we end up being able to test our classifier on 10 different test sets with 250 test instances and different training sets paired with them.
+
+We have provided the bash scripts that we used to perform the random splitting into 10 test-training pairs (called \texttt{divide\_train.bash}) and the cross-validation (called \texttt{cross\_validation.bash}). The latter outputs a result file for each test-training pair with the number of successful classifications and the total number of test instances. It also saves every misclassified instance to a separate folder for further examination.
+
 
 \end{document}
