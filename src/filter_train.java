@@ -118,7 +118,7 @@ public class filter_train {
 		Scanner scanner;
 		for(File f:list){
 			try {
-				scanner = new Scanner(f).useDelimiter("[\\s]+");
+				scanner = new Scanner(f).useDelimiter("[\\s\\p{Punct}]+");
 				while(scanner.hasNext()){
 					String word = scanner.next();
 					totalWords[i]++;
