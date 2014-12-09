@@ -122,10 +122,10 @@ The file \texttt{filter\_train.java} runs all of the computations and produces t
 \begin{itemize}
 \item \texttt{double[0]}: The number of times the word has occurred in all files marked 'spam*' in the training data.
 \item \texttt{double[1]}: The number of times the word has occurred in all files marked 'ham*' in the training data.
-\item \texttt{double[2]}: The probability that a randomly drawn word from a document in class $Spam$ will be this word $w_k \rightarrow P(w_k|pSpam)$
-\item \texttt{double[3]}: The probability that a randomly drawn word from a document in class $Ham$ will be this word $w_k \rightarrow P(w_k|pHam)$
+\item \texttt{double[2]}: The probability that a randomly drawn word from a document in class $Spam$ will be this word $w_k \rightarrow P(w_k|Spam)$
+\item \texttt{double[3]}: The probability that a randomly drawn word from a document in class $Ham$ will be this word $w_k \rightarrow P(w_k|Ham)$
 \end{itemize} 
-where $pSpam$ and $pHam$ respectively are computed by dividing the number of files markes spam* (or ham*) over the total number of training files. The values of \texttt{double[2]} and \texttt{double[3]} as explained above are computed as follows: 
+where we have $pSpam$ and $pHam$ respectively being computed by dividing the number of files marked spam* (or ham*) over the total number of training files. The values of \texttt{double[2]} and \texttt{double[3]} as explained above are computed as follows: 
 \begin{lstlisting}
 for(String word: vocabulary.keySet()){
 	double[] tab = vocabulary.get(word);
@@ -160,6 +160,23 @@ invested 7.0 0.0 -10.776703754836734 -14.512624361064837
 \end{lstlisting}
 
 \subsection{Classification}
-Once the training is completed, the program in \texttt{filter.java} can then use the data in \texttt{training_data.txt} to 
+Once the training is completed, the program in \texttt{filter.java} can then use the results in \texttt{training\_data.txt} to rebuild a Hashmap of \texttt{<word, double[]>} and classify instances provided to it. The formula provided in Mitchell's book returns an estimated target value for a given instance that is being tested. For spam
+\begin{center}
+$ p_1 = pSpam\prod\limits_{w_k \in vocabulary}P(w_k|Spam)$
+\end{center} 
+and for ham
+\begin{center}
+$ p_2 = pHam\prod\limits_{w_k \in vocabulary}P(w_k|Ham)$
+\end{center} 
+and the return value is 
+\begin{lstlisting}
+if(max(p1, p2) == p1) System.out.println("spam\n");
+else System.out.println("ham\n");
+\end{lstlisting}
+However, since in the training part we modified $P(w_k|Spam)$ to $log(P(w_k|Spam))$ (resp. $P(w_k|Ham)$ to $log(P(w_k|Ham))$) we get 
+\begin{center}
+$ p_1 = log(pSpam) + \sum\limits_{w_k \in vocabulary}log(P(w_k|Spam))$
+\end{center}
+with the same going for $p_2$, obviously.
 
 \end{document}
