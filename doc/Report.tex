@@ -1,0 +1,165 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{listings}
+\author{Prisca Aeby, Alexis Semple}
+\title{Naive Bayes Spam Filter}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Project report}
+\lhead{P. Aeby, A. Semple}
+\chead{Naive Bayes Spam Filter}
+\cfoot{\thepage}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+% Paragraph format
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+% Hyperlink format
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+
+\linespread{1.1}
+
+\renewcommand\thesection{\arabic{section}}
+\renewcommand{\arraystretch}{1.5}
+
+\begin{document}
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE University of Bristol}\\[1.5cm] % Name of your university/college
+\textsc{\LARGE Introduction to Machine Learning}\\[1cm] % Major heading such as course name
+\textsc{\Large Project report}\\[1cm]
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{\huge \bfseries Naive Bayes Spam Filter}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\Large \emph{Authors:}\\
+Prisca Aeby, Alexis Semple\\[3cm] % Your name
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[3cm] % Date, change the \today to a set date if you want to be precise
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+\begin{abstract}
+With today's world becoming more and more flooded with e-mails, spammers are responding with an alarming increase of unsolicited messages. The natural reaction to this has been the development of many different spam filtering techniques, of varying efficiency and reliability. We are going to be looking more specifically at one of these techniques, Naive Bayes spam filtering, how it can be implemented and improved, and how it compares to other filtering techniques.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+Naive Bayes text classification is a popular technique used in spam e-mail filtering. It relies on correlating the use of tokens (in our case words) and then using Bayesian inference to calculate the probability that a given e-mail is spam or ham. \footnote{\href{http://www.wikiwand.com/en/Naive\_Bayes\_spam\_filtering}{Wikipedia on Naive Bayes spam filtering} -  http://www.wikiwand.com/en/Naive\_Bayes \_spam\_filtering}
+Naive Bayes classifiers suppose strong independence between the features of the model.
+
+In the case of our project, the goal was to develop a binomial Naive Bayes text classifier written in Java to be tested and trained on real world data, or more specifically a large set of real world e-mails.
+
+\section{The Algorithm}
+We based the main algorithm of our spam filter on  \texttt{\textsc{Learn\_naive\_Bayes\_text}} and \texttt{\textsc{Classify\_naive\_Bayes\_text}} found in Tom Mitchell's book (on page 183).\footnote{\href{http://personal.disco.unimib.it/Vanneschi/McGrawHill\_-\_Machine\_Learning\_-Tom\_Mitchell.pdf}{http://personal.disco.unimib.it/Vanneschi/McGrawHill\_-\_Machine\_Learning\_-Tom\_Mitchell.pdf}} 
+Our program is split into two parts.
+
+\subsection{Training}
+The file \texttt{filter\_train.java} runs all of the computations and produces the results necessary to the supervised training part of the Naive Bayes text classification algorithm. In it, we iterate over all the files contained in a 'training set' directory and create a \texttt{java.util.HashMap} of all of the words therein. Each word is then a key in the HashMap and is associated with its value, a static array, each containing 4 precise values in the following order (\texttt{double[0..3]}):
+\begin{itemize}
+\item \texttt{double[0]}: The number of times the word has occurred in all files marked 'spam*' in the training data.
+\item \texttt{double[1]}: The number of times the word has occurred in all files marked 'ham*' in the training data.
+\item \texttt{double[2]}: The probability that a randomly drawn word from a document in class $Spam$ will be this word $w_k \rightarrow P(w_k|pSpam)$
+\item \texttt{double[3]}: The probability that a randomly drawn word from a document in class $Ham$ will be this word $w_k \rightarrow P(w_k|pHam)$
+\end{itemize} 
+where $pSpam$ and $pHam$ respectively are computed by dividing the number of files markes spam* (or ham*) over the total number of training files. The values of \texttt{double[2]} and \texttt{double[3]} as explained above are computed as follows: 
+\begin{lstlisting}
+for(String word: vocabulary.keySet()){
+	double[] tab = vocabulary.get(word);
+	tab[2] = (tab[0] + 1) / ((double)(totalWords[0] + vocabulary.size()));
+	tab[3] = (tab[1] + 1) / ((double)(totalWords[1] + vocabulary.size()));
+	vocabulary.put(word, tab);
+		}
+\end{lstlisting}
+where \texttt{totalWords[0..1]} contains the total number of words in all spam (resp. all ham) files and \texttt{vocabulary} is the HashMap of all words.
+
+At the end of the program, the content of vocabulary is written to a text file named \texttt{trainging\_data.txt} in a specific format: the first line contains $pSpam$ and $pHam$ in that order, separated by a space. Each of the following lines is dedicated to a single entry of the \texttt{vocabulary} HashMap, starting by the word itself, followed by the four values of its corresponding array, each separated by a space. The result looks something like this: 
+\begin{lstlisting}
+...
+invested 7.0 0.0 2.088031403992316E-5 4.980206170575049E-7 
+...
+\end{lstlisting}
+meaning that for the word 'invested' we have that it appears 7 times in files marked 'spam*', 0 times in files marked 'ham*', has a probability of $2.088031403992316 * 10^{-5}$ of being drawn at random from class $Spam$ and a probability of $4.980206170575049 * 10^{-7}$ of being drawn at random from class $Ham$. One obvious observation is that these probabilities are extremely small and can pose problems of arithmetic underflow later on, in the classification part of the algorithm. The solution we implemented to avoid this is to use logarithms, which converts very small positive numbers into large negatives. So the code given above for computing \texttt{double[2]} and \texttt{double[3]} becomes 
+
+\begin{lstlisting}
+...
+tab[2] = Math.log(tab[0] + 1) / ((double)(totalWords[0] + vocabulary.size())));
+tab[3] = Math.log((tab[1] + 1) / ((double)(totalWords[1] + vocabulary.size())));
+...
+\end{lstlisting}
+
+and the much more reasonable result in the text file is
+
+\begin{lstlisting}
+...
+invested 7.0 0.0 -10.776703754836734 -14.512624361064837 
+...
+\end{lstlisting}
+
+\subsection{Classification}
+Once the training is completed, the program in \texttt{filter.java} can then use the data in \texttt{training_data.txt} to 
+
+\end{document}
