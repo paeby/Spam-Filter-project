@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import org.tartarus.snowball.EnglishSnowballStemmerFactory;
-import org.tartarus.snowball.util.StemmerException;
+//import org.tartarus.snowball.EnglishSnowballStemmerFactory;
+//import org.tartarus.snowball.util.StemmerException;
 
 /**
  * @author Prisca Aeby, Alexis Semple
@@ -48,7 +48,7 @@ public class filter_train {
 	 * @param args The expected structure is: first, the path to the directory of training data, second the file to be classified
 	 * @throws StemmerException
 	 */
-	public static void main (String[] args) throws StemmerException {
+	public static void main (String[] args) /* throws StemmerException */ {
 
 		if(args.length != 1) {
 			throw new IllegalArgumentException("Wrong number of arguments\n" +
@@ -113,7 +113,7 @@ public class filter_train {
 	 * @param i indicates whether files in list are spam (i = 0) or ham (i = 1)
 	 * @throws StemmerException
 	 */
-	private static void wordCounter(List<File> list, int i) throws StemmerException{
+	private static void wordCounter(List<File> list, int i) /* throws StemmerException */ {
 
 		Scanner scanner;
 		for(File f:list){

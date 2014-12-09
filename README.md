@@ -4,12 +4,15 @@ Spam-Filter-project
 Implementation of a spam-filter using **Naive Bayes text classification**
 
 For compilation, run
+
     javac *.java
 
 To classify a test instance, run
+
     java filter.java test_instance
 
 This will classify the instance according to the training data provided in the file training_data.txt. If you want to generate your own training data, first run
+
     java filter_train.java training_directory
 
 There are some preprocessing steps that can be activated in the filter_train.java file, if desired. To do so, you need to uncomment a few lines.
