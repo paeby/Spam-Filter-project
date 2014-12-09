@@ -25,7 +25,7 @@ public class filter {
 	public static void main (String[] args) {
 		if (args.length != 1) {
 			throw new IllegalArgumentException("Wrong number of arguments\n" +
-					"The proper usage is: java filterb test_file");
+					"The proper usage is: java filter test_file");
 		}
 		
 		File testFile = new File(args[0]);
