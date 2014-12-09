@@ -10,11 +10,11 @@ For compilation, run
 
 To classify a test instance, run
 
-    java filter.java test_instance
+    java filter test_instance
 
 This will classify the instance according to the training data provided in the file training_data.txt. If you want to generate your own training data, first run
 
-    java filter_train.java training_directory
+    java filter_train training_directory
 
 There are some preprocessing steps that can be activated in the filter_train.java file, if desired. To do so, you need to uncomment a few lines.
 - To enable stop-words removal preprocessing, uncomment line 92
