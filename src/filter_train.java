@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-//import org.tartarus.snowball.EnglishSnowballStemmerFactory;
-//import org.tartarus.snowball.util.StemmerException;
+import org.tartarus.snowball.EnglishSnowballStemmerFactory;
+import org.tartarus.snowball.util.StemmerException;
 
 /**
  * @author Prisca Aeby, Alexis Semple
@@ -48,7 +48,7 @@ public class filter_train {
 	 * @param args The expected structure is: first, the path to the directory of training data, second the file to be classified
 	 * @throws StemmerException
 	 */
-	public static void main (String[] args) /* throws StemmerException */ {
+	public static void main (String[] args) throws StemmerException {
 
 		if(args.length != 1) {
 			throw new IllegalArgumentException("Wrong number of arguments\n" +
@@ -89,7 +89,7 @@ public class filter_train {
 		wordCounter(hamFiles, 1);
 
 		//TODO Uncomment following line to use stop-words preprocessing
-		//stopWords();
+		stopWords();
 
 		//Calculating conditional probabilities
 		for(String word:vocabulary.keySet()){
@@ -113,17 +113,17 @@ public class filter_train {
 	 * @param i indicates whether files in list are spam (i = 0) or ham (i = 1)
 	 * @throws StemmerException
 	 */
-	private static void wordCounter(List<File> list, int i) /* throws StemmerException */ {
+	private static void wordCounter(List<File> list, int i) throws StemmerException {
 
 		Scanner scanner;
 		for(File f:list){
 			try {
-				scanner = new Scanner(f).useDelimiter("[\\s\\p{Punct}]+");
+				scanner = new Scanner(f).useDelimiter("[\\s]+");
 				while(scanner.hasNext()){
 					String word = scanner.next();
 					totalWords[i]++;
 					//TODO Uncomment following line to enable stemming preprocessing
-					//word = EnglishSnowballStemmerFactory.getInstance().process(word);
+					word = EnglishSnowballStemmerFactory.getInstance().process(word);
 					if(vocabulary.containsKey(word)){
 						double[] tab = vocabulary.get(word);
 						tab[i]++;
@@ -182,9 +182,10 @@ public class filter_train {
 	}
 
 	private static void stopWords(){
-        ArrayList<String> stopWords = new ArrayList<String>(Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by",
-                                "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there",
-                                "these", "they", "this", "to", "was", "will", "with"));
+        ArrayList<String> stopWords = new ArrayList<String>(Arrays.asList("a","an", "and", 
+        		"are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it",
+        		"no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there",
+        		"these", "they", "this", "to", "was", "will", "with"));
         for(String word: vocabulary.keySet()){
                 if(stopWords.contains(word)){
                         vocabulary.remove(word);

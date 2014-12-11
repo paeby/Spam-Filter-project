@@ -2,7 +2,7 @@
 clear
 
 #Trains and tests on folders for cross-validation
-#output result_basic_NB.txt with
+#output result_stem_NB.txt with
 #1st line count of successful classifications
 #2nd line count of total classifications
 #-Run in parent folder of cross-validation subfolders
@@ -23,8 +23,8 @@ do
   do
     echo "file = $file"
     ((total++))
-    java filter "$file" > train"$i"/result_basic_NB.txt
-    res=`cat train$i/result_basic_NB.txt`
+    java filter "$file" > train"$i"/result_stem_NB.txt
+    res=`cat train$i/result_stem_NB.txt`
     echo "result = $res"
 
     #if the result produced by the test is contained in filename
@@ -38,8 +38,8 @@ do
     echo "total = $total"
   done
 
-  echo "$count" > train"$i"/result_basic_NB.txt
-  echo "$total" >> train"$i"/result_basic_NB.txt
+  echo "$count" > train"$i"/result_stem_NB.txt
+  echo "$total" >> train"$i"/result_stem_NB.txt
 
   mv training_data.txt train"$i"
 

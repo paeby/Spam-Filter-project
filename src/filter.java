@@ -71,7 +71,7 @@ public class filter {
 
 		try {	
 			@SuppressWarnings("resource")
-			Scanner scanner = new Scanner(email).useDelimiter("[\\s\\p{Punct}]+");
+			Scanner scanner = new Scanner(email).useDelimiter("[\\s]+");
 
 			while(scanner.hasNext()){
 				String next = scanner.next();

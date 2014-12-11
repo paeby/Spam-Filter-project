@@ -8,6 +8,9 @@
 \usepackage{hyperref}
 \usepackage{color}
 \usepackage{listings}
+
+\graphicspath{/home/alexis/git/Spam-Filter-project/doc/}
+
 \author{Prisca Aeby, Alexis Semple}
 \title{Naive Bayes Spam Filter}
 
@@ -184,11 +187,147 @@ $ p_1 = log(pSpam) + \sum\limits_{w_k \in vocabulary}log(P(w_k|Spam))$
 \end{center}
 with the same going for $p_2$, obviously. This determines whether a test instance is classified as spam (for $p_1 > p_2$) or ham (otherwise).
 
-\section{Analysis of results and improving the classifier}
-\subsection{10-fold cross-validation}
-As indicated by the project specification, in order to test the consistency of the classifier and to evaluate its precision, we performed a 10-fold cross-validation on the provided training set, which means that we split the training set into 10 test sets of equal size, and we did so randomly in order to obtain an approximately equal spread of members of both classes in all test sets. To each test set (10\% of the original training set, i.e. 250 files) we then match the remaining 90\% as a training set. So we end up being able to test our classifier on 10 different test sets with 250 test instances and different training sets paired with them.
+\section{Improving the classifier and testing}
+\subsection{Simple preprocessing}
+As indicated by the project specification, in order to test the consistency of the classifier and to evaluate its precision, we performed a 10-fold cross-validation on the provided training set, which means that we split the training set into 10 folds of equal size, and we did so randomly in order to obtain an approximately equal spread of members of both classes in every test sets. To each test set (10\% of the original training set, i.e. 250 files) we then match the remaining 90\% as a training set. So we end up being able to test our classifier on 10 different folds with 250 test instances and different training sets paired with them.
 
-We have provided the bash scripts that we used to perform the random splitting into 10 test-training pairs (called \texttt{divide\_train.bash}) and the cross-validation (called \texttt{cross\_validation.bash}). The latter outputs a result file for each test-training pair with the number of successful classifications and the total number of test instances. It also saves every misclassified instance to a separate folder for further examination.
+We have provided the bash scripts that we used to perform the random splitting into 10 test-training pairs (called \texttt{divide\_train.bash}) and the cross-validation (called \texttt{cross\_validation.bash}). The latter outputs a result file for each fold with the number of successful classifications and the total number of test instances. It also saves every misclassified instance to a separate folder for further examination.
+
+\subsubsection{10-fold cross-validation}
+
+To begin with, we ran a cross-validation on our Naive Bayesian classifier as described up to this point, that is to say with no text preprocessing steps and using whitespaces and any punctuation mark as word separators. Following this, we ran another cross-validation, this time considering all punctuation marks as part of the word rather than as a separator. The results can be seen in figure 1.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{1st_preprocessing}
+\centering
+\caption{Results of the first two 10-fold cross-validations. On the left, we have the Naive Bayes classifier using white spaces and punctuation as separators. On the right, Naive Bayes using only white spaces.}
+\end{figure}
+
+\paragraph*{Paired t-test}
+We can see that the second classifier seems to be slightly more efficient, with a slightly higher mean success rate ($97.04\%$) and a lower standard deviation ($\approx0.015$). To be able to conclusively decide whether this observed higher performance is due to chance or superiority of the classifier, we'll compute the \textit{p-value} for this pair of results. We first state our null and alternative hypotheses:
+\begin{center}
+$H_0: $ true difference in means is equal to 0
+
+$H_1: $ true difference in means is not equal to 0
+\end{center}
+In other words, if our test accepts the null hypothesis, it indicates that the difference between the results of the two 10-fold cross-validations are due to random behaviour of the data. As is customary, we'll choose 95\% confidence interval, so the test will decide whether or not the differences are significant at the $\alpha = 0.05$ level.
+
+The \textit{p-value} can be computed easily using R. The result for the following commands is then given as follows (NB is Naive Bayes, NBwp is Naive Bayes with punctuation as word part):
+
+\begin{lstlisting}[language=R]
+> NB <- c(0.952, 0.976, 0.968, 0.948, 0.972, 0.980, 0.976, 0.976, 0.94, 0.932)
+> NBwp <- c(0.956, 0.988, 0.964, 0.964, 0.98, 0.98, 0.972, 0.988, 0.972, 0.94)
+> t.test(NB, NBwp, paired=TRUE)
+
+Paired t-test
+
+data:  NB and NBwp
+t = -2.473, df = 9, p-value = 0.0354
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.0160839381 -0.0007160619
+sample estimates:
+mean of the differences 
+                -0.0084
+
+\end{lstlisting}
+
+The R program gives us several results, e.g. the t-statistic (= -2.473), the degrees of freedom (= 9), the confidence interval with $\alpha = 0.05$, but most importantly, we can tell from the fact that the p-value is $0.0354 < 0.05$ that we can reject $H_0$ and say with a confidence of 95\% that the difference between these classifiers is not due to chance. Considering punctuation marks as part of a word yields a better spam-filter, and this is the technique we adopted for our filter.
+
+A reason for the superiority of this technique in this context could be the use of certain words paired with strong punctuation could be very decisive indicators for one class or the other (some simple examples could be 'viagra!', 'investment?', 'lottery!!!', etc.).
+
+\paragraph*{Friedman test}
+In order to further test these results, we ran a Friedman test on the data, and obtained the following 
+
+\begin{lstlisting}[language=R]
+> NB <- c(0.952, 0.976, 0.968, 0.948, 0.972, 0.98, 0.976, 0.976, 0.94, 0.932)
+> NBp <- c(0.956, 0.988, 0.964, 0.964, 0.98, 0.98, 0.972, 0.988, 0.972, 0.94)
+> F1 = matrix(
++ c(NB, NBp),
++ nrow=10,
++ ncol=2)
+
+> friedman.test(F1)
+
+	Friedman rank sum test
+
+data:  F1
+Friedman chi-squared = 2.7778, df = 1, p-value = 0.09558
+\end{lstlisting}
+
+The Friedman test ranks each row of a matrix according to the highest performance. It then tests whether differences between the mean ranking for each column is significant or not (again here at level $ \alpha = 0.05 $). It has the following null hypothesis:
+ 
+\begin{center}
+$ H_0: $ All algorithms perform equally.
+\end{center}
+
+This can be rejected only if the critical value is less or equal to the Friedman statistic. In the results above, we can see that the Friedman statistic is 2.7778, and by looking it up in a chi-squared table for $ \alpha = 0.05, df = 1 $, we find a critical value of $ 3.84 \geq 2.7778 $. So we have to accept $H_0$ which states that the two methods perform essentially with the same efficiency.
+
+This can be seen to be contradictory to our previous results, since we had found that including punctuation marks into the words was seen to yield superior classification efficiency. However, we could also remark that in both tests, the result is relatively close to the threshold (i.e. the chosen $\alpha$ and critical value), so the outcome can legitimately vary from one test to the next.
+
+\subsection{Advanced preprocessing techniques}
+To continue to try and improve our filter, we implemented and tested some other preprocessing techniques that could result in higher success rates. 
+
+\subsubsection{Stop-words removal}
+This technique consists in removing from the set of all words in the data some basic words that would result in inconclusive evidence to either the spam or ham class. In most cases, these words are common function words, but there is no defined standard set. In our case, we decided to remove the entries of our stop-words once our \texttt{vocabulary} HashMap was complete:
+
+\begin{lstlisting}
+ArrayList<String> stopWords = new ArrayList<String>(Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there", "these", "they", "this", "to", "was", "will", "with"));
+        for(String word: vocabulary.keySet()){
+                if(stopWords.contains(word)){
+                        vocabulary.remove(word);
+                }
+\end{lstlisting}
+
+\subsubsection{Stemming} 
+The stemming preprocessing technique consists in reducing words to their morphological root. This does not always result in the stem being the actual root of the word or it being an actual word. For example the words "argue", "argument", "arguing", "argues", "argus" would all be stemmed to "argu", which is neither a real world, nor the actual root of the listed words.
+\footnote{\href{http://www.wikiwand.com/en/Stemming}{Wikipedia on Stemming} -  http://www.wikiwand.com/en/Stemming} 
+
+We implemented this technique in our filter using the Snowball Stemmer for Java.
+\footnote{\href{http://trimc-nlp.blogspot.co.uk/2013/08/snowball-stemmer-for-java.html}{The .jar can be downloaded from this website} -  http://trimc-nlp.blogspot.co.uk/2013/08/snowball-stemmer-for-java.html}
+This resulted in us adding the stem of the word in our \texttt{vocabulary} collection, rather than the actual word. As a consequence, the training data would then be quite a lot smaller than without the stemming technique ($\approx 4.1$ Mb rather than $\approx 4.7$ Mb without stemming).
+
+\subsubsection{10-fold cross-validation} 
+
+We ran cross validations on three combinations of these techniques, using stop-words and stemming alone and then together. The results can be seen in figures 2 and 3.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{advanced1st}
+\centering
+\caption{Results of the Naive Bayes and Naive Bayes with stop-words removal cross-validations.}
+\end{figure}
+
+\paragraph*{Paired t-test}
+As for the previous cross-validations, we want test these results at a level of significance of $\alpha = 0.05$. We ran the same R commands as previously, pairwise to compare with the Naive Bayes filter without any preprocessing and obtained the following:
+\begin{itemize}
+\item \textbf{NB - NB with stop-words removal}: $p-value = 0.5203$, $H_0$ is accepted.
+\item \textbf{NB - NB with stemming}: $p-value = 0.0001733$, $H_0$ is rejected.
+\item \textbf{NB - NB with stop-words removal and stemming}: \linebreak $p-value = 0.0003579$, $H_0$ is accepted.
+\end{itemize}
+
+From this, we know that we can assume with a confidence level of 95\% that stemming preprocessing has a negative impact on the performance of the filter, whereas stop-words removal seems to have a positive effect, but the p-value points to the difference being due to chance and therefore non-conclusive.
+
+A way to interpret the failure of stemming to improve the filter is to look at both the smaller size of the training data and the relatively weaker performance as an instance of generalisation of the data by the classifier, i.e. it reduces the words to a too general state and they lose information relevant to their probability of occurring in the respective classes of the model.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{advanced2nd}
+\centering
+\caption{Results of the Naive Bayes with stemming and Naive Bayes with stemming and stop-words removal preprocessing.}
+\end{figure}
+
+\paragraph*{Friedman test}
+Once again we ran a Friedman test on these results to see if it validates our findings.
+\begin{itemize}
+\item \textbf{Test on all four cross-validations:} Friedman statistic = 24.7419, for $ \alpha = 0.05, df = 3 $, critical value = 7.81, $ H_0 $ is rejected.
+\item \textbf{Test on NB and NB with stop-words removal:} Friedman statistic = 0.5, for $ \alpha = 0.05, df = 1 $, critical value = 3.84, $ H_0 $ is accepted.
+\item \textbf{Test on NB and NB with stemming:} Friedman statistic = 9, for $ \alpha = 0.05, df = 1 $, critical value = 3.84, $ H_0 $ is rejected.
+\end{itemize}
+
+Briefly summarised, these results concur with our t-test results, since they state that all 4 methods compared together do not perform equally, nor do Naive Bayes without advanced preprocessing and Naive Bayes with stemming. However, when comparing the basic Naive Bayes with the one with stop-words removal, the null hypothesis is accepted, and the test states that both rank equally, with a level of confidence of 95\%.
+
+\section{Other classifiers}
+In order to evaluate the efficiency of our classifier within the range of other widely used classifiers in the real world, we ran two more cross-validations, using two of WEKA's defined classifiers: the SMO implementation of support vector machine classifying, and the J48 implementation of Decision Tree classification.
+
 
 
 \end{document}
