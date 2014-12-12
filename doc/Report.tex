@@ -326,8 +326,35 @@ Once again we ran a Friedman test on these results to see if it validates our fi
 Briefly summarised, these results concur with our t-test results, since they state that all 4 methods compared together do not perform equally, nor do Naive Bayes without advanced preprocessing and Naive Bayes with stemming. However, when comparing the basic Naive Bayes with the one with stop-words removal, the null hypothesis is accepted, and the test states that both rank equally, with a level of confidence of 95\%.
 
 \section{Other classifiers}
-In order to evaluate the efficiency of our classifier within the range of other widely used classifiers in the real world, we ran two more cross-validations, using two of WEKA's defined classifiers: the SMO implementation of support vector machine classifying, and the J48 implementation of Decision Tree classification.
+In order to evaluate the efficiency of our classifier within the range of other widely used classifiers in the real world, we ran two more cross-validations, using two of WEKA's defined classifiers: the SMO implementation of support vector machine classifying, and the J48 implementation of Decision Tree classification. The results can be seen in figure 4.
 
+\begin{figure}
+\includegraphics[width=\textwidth]{Other_class}
+\centering
+\caption{Results of the SVM and Decision Tree classifier cross-validations.}
+\end{figure}
 
+\paragraph*{Paired t-test}
+As was done previously, we ran a paired t-test on the results of these two classifiers with the results of the basic Naive Bayes classifier given in figure 2. Using R, we obtained the following results:
+
+\begin{itemize}
+\item \textbf{NB - SVM:} $ p-value = 0.6808 $, $ H_0 $ is accepted.
+\item \textbf{NB - J48 Decision tree:} $ p-value = 0.0001175 $, $ H_0 $ is rejected. 
+\end{itemize}
+
+The results of the test state that only for the NB - Decision tree comparison is the p-value significant at the $ \alpha = 0.05 $ level, and therefore the differences in performance between the two algorithms are not due to chance but rather to the superiority of the Naive Bayes classifier, over the Decision Tree.
+
+\paragraph*{Friedman test}
+From the above results, we would expect the Friedman test to yield a result that would reject the null hypothesis. We tested this as previously, using R.
+
+\begin{itemize}
+\item \textbf{Global test on NB, SVM, J48:} Friedman statistic = 15.2, for $ \alpha = 0.05, df = 2 $, critical value = 5.99, $ H_0 $ is rejected.
+\item \textbf{Test on NB and SVM:} Friedman statistic = 0.4, for $ \alpha = 0.05, df = 1 $, critical value = 3.84, $ H_0 $ is accepted.
+\end{itemize}
+
+As expected, the results to the global test suggest that the three algorithms don't behave equally, but NB and SVM are accepted at a confidence level of 95\% to perform equally.
+
+\section{Additional observations}
+Word analysis wtf!?!!!
 
 \end{document}
