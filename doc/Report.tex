@@ -328,6 +328,10 @@ Briefly summarised, these results concur with our t-test results, since they sta
 \section{Other classifiers}
 In order to evaluate the efficiency of our classifier within the range of other widely used classifiers in the real world, we ran two more cross-validations, using two of WEKA's defined classifiers: the SMO implementation of support vector machine classifying, and the J48 implementation of Decision Tree classification. The results can be seen in figure 4.
 
+A support vector machine model constructs a hyperplane in a n-dimensional space (in our case n = 2) mapped so that the n categories are divided by as wide a gap as possible, hence resulting in a low generalisation error for the classifier.\footnote{\href{http://www.wikiwand.com/en/Support\_vector\_machine}{Wikipedia on Support vector machines - http://www.wikiwand.com/en/Support\_vector\_machine}} 
+
+A decision tree model is constructed by splitting a source set (i.e. the training set) into subsets based on an attribute value test.\footnote{\href{http://www.wikiwand.com/en/Decision\_tree\_learning}{Wikipedia on Decision tree learning - http://www.wikiwand.com/en/Decision\_tree\_learning}}
+
 \begin{figure}
 \includegraphics[width=\textwidth]{Other_class}
 \centering
@@ -355,6 +359,18 @@ From the above results, we would expect the Friedman test to yield a result that
 As expected, the results to the global test suggest that the three algorithms don't behave equally, but NB and SVM are accepted at a confidence level of 95\% to perform equally.
 
 \section{Additional observations}
-Word analysis wtf!?!!!
+\subsection{High word occurrences in the different classes}
+We wanted to investigate whether any information could be obtained from the high frequency words occurring in the spam and ham classes respectively, so we extracted the 20 highest occurrence rates for each class and its corresponding key value from our \texttt{vocabulary} HashMap, trying different settings for our filter in order to establish the variance in the results (i.e. punctuation as word separator, stop-words removal, setting a minimum length for the word)
+
+\subsection{Significant error types}
+\subsubsection{False positives}
+NB - 5, 3, 3, 7, 3, 4, 3, 4, 9
+NBpunct - 4, 1, 3, 3, 2, 3, 5, 1, 4, 7
+NBpunctStem - 6, 2, 3, 8, 5, 9, 8, 5, 8, 0
+NBpunctStemStop - 7, 3, 5, 11, 7, 11, 9, 7, 11, 11
+NBstem - 10, 8, 12, 23, 12, 14, 14, 20, 15, 15
+NBstop - 5, 4, 3, 7, 3, 4, 2, 4, 8, 5
+NBstopStem - 8, 6, 10, 16, 10, 11, 10, 13, 13, 15
+
 
 \end{document}
