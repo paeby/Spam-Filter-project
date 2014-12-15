@@ -16,8 +16,8 @@ This will classify the instance according to the training data provided in the f
 
     java filter_train training_directory
 
-There are some preprocessing steps that can be activated in the filter_train.java file, if desired. To do so, you need to uncomment a few lines.
-- To enable stop-words removal preprocessing, uncomment line 92
+There are some preprocessing steps that can be activated/deactivated in the filter_train.java file, if desired. To do so, you need to uncomment/comment a few lines.
+- To disable stop-words removal preprocessing, comment line 92
 - To enable stemming preprocessing, uncomment the following:
   - line 126
   - the 'import' declarations at the beginning of the document

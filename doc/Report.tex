@@ -108,7 +108,7 @@ Prisca Aeby, Alexis Semple\\[3cm] % Your name
 With today's world becoming more and more flooded with e-mails, spammers are responding with an alarming increase of unsolicited messages. The natural reaction to this has been the development of many different spam filtering techniques, of varying efficiency and reliability. We are going to be looking more specifically at one of these techniques, Naive Bayes spam filtering, how it can be implemented and improved, and how it compares to other filtering techniques.
 \end{abstract}
 
-\tableofcontents
+\tableofcontents \pagebreak
 
 \section{Introduction}
 Naive Bayes text classification is a popular technique used in spam e-mail filtering. It relies on correlating the use of tokens (in our case words) and then using Bayesian inference to calculate the probability that a given e-mail is spam or ham. \footnote{\href{http://www.wikiwand.com/en/Naive\_Bayes\_spam\_filtering}{Wikipedia on Naive Bayes spam filtering} -  http://www.wikiwand.com/en/Naive\_Bayes \_spam\_filtering}
@@ -298,7 +298,7 @@ We ran cross validations on three combinations of these techniques, using stop-w
 \end{figure}
 
 \paragraph*{Paired t-test}
-As for the previous cross-validations, we want test these results at a level of significance of $\alpha = 0.05$. We ran the same R commands as previously, pairwise to compare with the Naive Bayes filter without any preprocessing and obtained the following:
+As for the previous cross-validations, we want to test these results at a level of significance of $\alpha = 0.05$. We ran the same R commands as previously, pairwise to compare with the Naive Bayes filter without any preprocessing and obtained the following:
 \begin{itemize}
 \item \textbf{NB - NB with stop-words removal}: $p-value = 0.5203$, $H_0$ is accepted.
 \item \textbf{NB - NB with stemming}: $p-value = 0.0001733$, $H_0$ is rejected.
@@ -360,17 +360,50 @@ As expected, the results to the global test suggest that the three algorithms do
 
 \section{Additional observations}
 \subsection{High word occurrences in the different classes}
-We wanted to investigate whether any information could be obtained from the high frequency words occurring in the spam and ham classes respectively, so we extracted the 20 highest occurrence rates for each class and its corresponding key value from our \texttt{vocabulary} HashMap, trying different settings for our filter in order to establish the variance in the results (i.e. punctuation as word separator, stop-words removal, setting a minimum length for the word)
+We wanted to investigate whether any information could be obtained from the high frequency words occurring in the spam and ham classes respectively, so we extracted the 20 highest occurrence rates for each class and its corresponding key value from our \texttt{vocabulary} HashMap, trying different settings for our filter in order to establish the variance in the results (i.e. punctuation as word separator, stop-words removal, setting a minimum length for the word).
+
+These results yield feeble observations compared to what we have been able to establish so far, and were unable to draw any reasonable conclusions from it. We have nonetheless added the results as an annexed text file with the submission documents named 'word\_analysis.txt'. 
+
+One of the searches, for the most occurring words in the spam and ham classes yielded the following. This result is for the classifier using the simple preprocessing of counting punctuation as part of words, and an imposed lower bound for word length. 
+
+\begin{lstlisting}[language=]
+********Punctuation as part of word, without stop words removal, with word limit (>5)********
+
+-Spam words:
+
+{eived:=1013.0, people=446.0, program=385.0, please=371.0, address=361.0, addresses=297.0, href="h=295.0, zzzz@lo=284.0, Delivered-To:=274.0, e-mail=265.0, Message-Id:=225.0, millio=201.0, remove=190.0, -Type:=188.0, orders=180.0, [127.0.0.1])=169.0, sfer-E=166.0, MIME-Versio=157.0, hmail-5.9.0)=148.0, (8.9.3/8.9.3)=146.0, <zzzz@lo=142.0, .org>;=136.0, blishi=133.0, .spamassassi=129.0, message=128.0, available=124.0, removed=123.0, ll.org=121.0, Reply-To:=113.0, Normal=112.0, X-Mailer:=108.0, dogma.slash=104.0, follow=103.0, followi=102.0, simply=99.0, <zzzz@spamassassi=97.0, before=96.0}
+
+-Ham words:
+
+{eived:=7582.0, href="h=6859.0, om/b.gif"=5911.0, p://www.=5571.0, om/Cli=4639.0, p://www.zd=3343.0, ellspa=3315.0, ellpaddi=3304.0, ha.org=2502.0, border="0"=2267.0, g-admi=2233.0, p://home.=2134.0, [127.0.0.1])=1925.0, e="arial,=1713.0, bsp;<a=1702.0, ="1"></=1638.0, (8.11.6/8.11.6)=1540.0, iversi=1437.0, -Type:=1327.0, (8.9.3/8.9.3)=1325.0, ll.org=1299.0, dogma.slash=1292.0, Delivered-To:=1266.0, .org>;=1238.0, /////////////////////////////////////////////////////// /////////////////////=1214.0, p://www.lo=1154.0, Users'=1128.0, [127.0.0.1]=1107.0, Message-Id:=1056.0, hmail-5.9.0)=994.0, MIME-Versio=978.0, olor="#000000"><img=974.0, h="10"=952.0, x.ie>;=945.0, HREF="h=935.0, border=0=929.0, ="_bla=928.0, border="0">=910.0, om/graphi=847.0}
+
+
+\end{lstlisting}
 
 \subsection{Significant error types}
-\subsubsection{False positives}
-NB - 5, 3, 3, 7, 3, 4, 3, 4, 9
-NBpunct - 4, 1, 3, 3, 2, 3, 5, 1, 4, 7
-NBpunctStem - 6, 2, 3, 8, 5, 9, 8, 5, 8, 0
-NBpunctStemStop - 7, 3, 5, 11, 7, 11, 9, 7, 11, 11
-NBstem - 10, 8, 12, 23, 12, 14, 14, 20, 15, 15
-NBstop - 5, 4, 3, 7, 3, 4, 2, 4, 8, 5
-NBstopStem - 8, 6, 10, 16, 10, 11, 10, 13, 13, 15
+Another additional type of performance analysis we looked at, was evaluating any observable differences in certain errors among the classifiers, i.e. false negatives and false positives. The higher cost error of the two is quite clearly the false positive, since classifying the occasional spam e-mail as ham is something easily spotted by the user, whereas a ham e-mail set in the spam class will not necessarily be found, since the tendency to verify all spam is much smaller on the user end. The error of a false positive is therefore much more likely to unnoticed. As a result, we focused mainly on the latter type of error.
 
+\subsubsection{False positives}
+
+The number of false positives, their means and standard deviations for different preprocessing combinations of our Naive Bayes classifier can be found in figure 5. These statistics visibly confirm what we had already obtained in our previous tests.
+
+First of all, the stemming preprocessing technique does not yield encouraging results and in some instances of its use, it yields alarmingly high rates of false positives, going up to the maximum of 23 in our cross validations. 
+
+\begin{figure}
+\includegraphics[width=\textwidth]{false_positives}
+\centering
+\caption{Count of false positive errors per classifier. Notation: NB = Naive Bayes, sw = stop-words removal, st = stemming, p = Punctuation as word part}
+\end{figure}
+
+Again we can remark that including punctuation in the words of our vocabulary rather than seeing it as a word separator globally lowers the rate of false positives, and the best results are achieved with only that simple preprocessing technique (on average 3.3 false positives per fold). 
+
+The use of stop-words removal seems to slightly change the level of false positive occurrence, in the basic case, using punctuation as word separators, it improves the result, in the other, it worsens them. The efficiency of this technique seems to vary according to which other techniques are applied.
+
+\section{Conclusion}
+The creation of this spam filter has lead us to appreciate the efficiency of a simple Naive Bayes text classifier which is trained with a large enough data set. It competes surprisingly well with other classifiers that one would have a tendency to call more sophisticated. From our statistical analysis, we found that our implementation of a multinomial Naive Bayes filter can be superior to widely used classifiers such as decision trees, and was found to perform on an equal level with a support vector machine.
+
+Improving a classifier is something that requires a lot of testing as well, and we've established that some preprocessing techniques perform better in the company or absence of others. This needs to be studied carefully before integrating them into a classifier.
+
+There are of course a lot of other preprocessing techniques which we didn't try to implement or study the efficiency of, but some of them would probably increase our overall performance, for example, systematically removing header information in e-mails, in order to avoid heavy repetition of some words yielding very little information as to the class of the instance (much like stop-words). This suggests that an even higher accuracy rate can be achieved by using quite simple techniques on an overall simple classifier.
 
 \end{document}
